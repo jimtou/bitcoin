@@ -32,6 +32,10 @@ LIBBITCOIN_UTIL=libbitcoin_util.a
 LIBBITCOIN_CRYPTO_BASE=crypto/libbitcoin_crypto_base.a
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
+LIBDAG_NETWORK=libdag_network.a
+LIBDAG_CIRI=libdag_ciri.a
+#LIBDAG_UTILS=libdag_utils.a
+LIBDAG_COMMON=libdag_common.a
 
 if ENABLE_ZMQ
 LIBBITCOIN_ZMQ=libbitcoin_zmq.a
@@ -70,10 +74,13 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_CLI) \
   $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_ZMQ)
+  $(LIBBITCOIN_ZMQ) \
+  $(LIBDAG_NETWORK) \
+  $(LIBDAG_CIRI) \
+  $(LIBDAG_COMMON)
 
 lib_LTLIBRARIES = $(LIBBITCOINCONSENSUS)
-
+# 这里配置最终编译的程序
 bin_PROGRAMS =
 noinst_PROGRAMS =
 TESTS =
@@ -209,6 +216,94 @@ BITCOIN_CORE_H = \
   zmq/zmqnotificationinterface.h \
   zmq/zmqpublishnotifier.h \
   zmq/zmqrpc.h
+
+# entangle core #
+DAG_CORE_H = \
+  dag/network/sockets.h \
+  dag/ciri/api/api.h \
+  dag/ciri/api/conf.h \
+  dag/ciri/conf.h \
+  dag/ciri/core.h \
+  dag/ciri/usage.h \
+  dag/utils/containers/hash/hash_stack.h.tpl \
+  dag/utils/containers/hash/hash_queue.h.tpl \
+  dag/utils/containers/hash/hash_set.h.tpl \
+  dag/utils/containers/lists/concurrent_list.h.inc \
+  dag/utils/containers/lists/concurrent_list.c.inc \
+  dag/utils/containers/lists/concurrent_list_neighbor.h \
+  dag/utils/containers/lists/concurrent_list_trit_array.h \
+  dag/utils/containers/queues/concurrent_queue_trit_array.h \
+  dag/utils/containers/queues/concurrent_queue.h.inc \
+  dag/utils/containers/bitset.h \
+  dag/utils/handles/cond.h \
+  dag/utils/handles/lock.h \
+  dag/utils/handles/rand.h \
+  dag/utils/handles/rw_lock.h \
+  dag/utils/handles/thread.h \
+  dag/utils/export.h \
+  dag/utils/files.h \
+  dag/utils/hash_maps.h \
+  dag/utils/logger_helper.h \
+  dag/utils/macros.h \
+  dag/utils/merkle.h \
+  dag/utils/signed_files.h \
+  dag/utils/system.h \
+  dag/utils/time.h
+  dag/common/errors.h \
+  dag/common/defs.h \
+  dag/common/error_strings.h \
+  dag/common/stdint.h \
+  dag/common/curl-p/curl_p_b_s.h \
+  dag/common/curl-p/curl_p_s.h \
+  dag/common/curl-p/curl_s_digest.h \
+  dag/common/curl-p/digest.h \
+  dag/common/curl-p/hamming.h \
+  dag/common/curl-p/hashcash.h \
+  dag/common/curl-p/indices.h \
+  dag/common/curl-p/pearl_diver.h \
+  dag/common/curl-p/ptrit.h \
+  dag/common/curl-p/search.h \
+  dag/common/curl-p/trit.h \
+  dag/common/kerl/bigint.h \
+  dag/common/kerl/converter.h \
+  dag/common/kerl/hash.h \
+  dag/common/kerl/kerl.h \
+  dag/common/model/bundle.h \
+  dag/common/model/milestone.h \
+  dag/common/model/transaction.h \
+  dag/common/model/transfer.h \
+  dag/common/model/tryte_transaction.h \
+  dag/common/netowrk/endpoint.h \
+  dag/common/netowrk/network.h \
+  dag/common/netowrk/uri_parser.h \
+  dag/common/pow/pow.h \
+  dag/common/sign/normalize.h \
+  dag/common/sign/v1/iss_curl.h \
+  dag/common/sign/v1/iss_kerl.h \
+  dag/common/sign/v2/iss_curl.h \
+  dag/common/sign/v2/iss_kerl.h \
+  dag/common/storage/connection.h \
+  dag/common/storage/defs.h \
+  dag/common/storage/pack.h \
+  dag/common/storage/storage.h \
+  dag/common/storage/sql/defs.h \
+  dag/common/storage/sql/statements.h \
+  dag/common/trinary/add.h \
+  dag/common/trinary/bct.h \
+  dag/common/trinary/bytes.h \
+  dag/common/trinary/ptrit.h \
+  dag/common/trinary/ptrit_incr.h \
+  dag/common/trinary/trit_array.h \
+  dag/common/trinary/trit_byte.h \
+  dag/common/trinary/trit_long.h \
+  dag/common/trinary/trit_ptrit.h \
+  dag/common/trinary/trits.h \
+  dag/common/trinary/trit_tryte.h \
+  dag/common/trinary/tryte_ascii.h \
+  dag/common/trinary/tryte.h \
+  dag/common/trinary/tryte_long.h
+ 
+  
 
 
 obj/build.h: FORCE
@@ -348,6 +443,53 @@ crypto_libbitcoin_crypto_shani_a_CXXFLAGS += $(SHANI_CXXFLAGS)
 crypto_libbitcoin_crypto_shani_a_CPPFLAGS += -DENABLE_SHANI
 crypto_libbitcoin_crypto_shani_a_SOURCES = crypto/sha256_shani.cpp
 
+
+# edit by kevin
+
+# common library
+libdag_common_a_CPPFLAGS = $(AM_CPPFLAGS)
+libdag_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_common_a_SOURCES = \
+  dag/common/errors.c \
+  dag/common/curl-p/curl_p_b_s.c \
+  dag/common/curl-p/curl_p_bct.c \
+  dag/common/curl-p/curl_p_print.c \
+  dag/common/curl-p/curl_p_s.c \
+  dag/common/curl-p/curl_p.c \
+  dag/common/curl-p/digest.c \
+  dag/common/curl-p/hamming.c \
+  dag/common/curl-p/hashcash.c \
+  dag/common/curl-p/pearl_diver.c \
+  dag/common/kerl/bigint.c \
+  dag/common/kerl/converter.c \
+  dag/common/kerl/hash.c \
+  dag/common/kerl/kerl.c \
+  dag/common/model/bundle.c \
+  dag/common/model/transaction.c \
+  dag/common/model/transfer.c \
+  dag/common/model/tryte_transaction.cc \
+  dag/common/netowrk/uri_parser.c \
+  dag/common/pow/pow.c \
+  dag/common/sign/normalize.c \
+  dag/common/sign/v1/iss_curl.c \
+  dag/common/sign/v1/iss_kerl.c \
+  dag/common/sign/v2/iss_curl.c \
+  dag/common/sign/v2/iss_kerl.c \
+  dag/common/storage/pack.c \
+  dag/common/storage/sql/statements.c \  
+  dag/common/trinary/add.c \
+  dag/common/trinary/ptrit_incr.c \
+  dag/common/trinary/trit_array.c \
+  dag/common/trinary/trit_byte.c \
+  dag/common/trinary/trit_long.c \
+  dag/common/trinary/trit_ptrit.c \
+  dag/common/trinary/trit_tryte.c \
+  dag/common/trinary/tryte_ascii.c \
+  dag/common/trinary/tryte_long.c \
+  $(BITCOIN_CORE_H) \
+  $(DAG_CORE_H)
+
+  
 # consensus: shared between all executables that validate any consensus rules.
 libbitcoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -452,6 +594,51 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
+# dag network: dag network sockets
+libdag_network_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
+libdag_network_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_network_a_SOURCES = \
+  dag/network/sockets.c \
+  $(BITCOIN_CORE_H) \
+  $(DAG_CORE_H)
+
+# dag ciri: dag ciri
+libdag_ciri_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
+libdag_ciri_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_ciri_a_SOURCES = \
+  dag/ciri/api/api.c \
+  dag/ciri/api/conf.c \
+  dag/ciri/conf.c \
+  dag/ciri/core.c \
+  dag/ciri/main.c \
+  dag/ciri/usage.c \
+  $(BITCOIN_CORE_H) \
+  $(DAG_CORE_H)
+  
+# dag utils: dag utils
+#libdag_utils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
+#libdag_utils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+#libdag_utils_a_SOURCES = \
+  dag/utils/containers/hash/hash_queue.c.tpl \
+  dag/utils/containers/hash/hash_set.c.tpl \
+  dag/utils/containers/hash/hash_stack.c.tpl \
+  dag/utils/containers/lists/concurrent_list_neighbor.c \
+  dag/utils/containers/lists/concurrent_list_trit_array.c \
+  dag/utils/containers/queues/concurrent_queue_trit_array.c \
+  dag/utils/containers/queues/concurrent_queue.c.inc \
+  dag/utils/containers/bitset.c \
+  dag/utils/tests/test_merkle.c \
+  dag/utils/tests/test_signed_files.c \
+  dag/utils/files.c \
+  dag/utils/hash_maps.c \
+  dag/utils/logger_helper.c \
+  dag/utils/merkle.c \
+  dag/utils/signed_files.c \
+  dag/utils/system.c \
+  dag/utils/time.c \
+  $(BITCOIN_CORE_H) \
+  $(DAG_CORE_H)
+  
 # bitcoind binary #
 bitcoind_SOURCES = bitcoind.cpp
 bitcoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
@@ -474,7 +661,10 @@ bitcoind_LDADD = \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
-  $(LIBSECP256K1)
+  $(LIBSECP256K1) \
+  $(LIBDAG_NETWORK) \
+  $(LIBDAG_CIRI) \
+  $(LIBDAG_COMMON)
 
 bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
