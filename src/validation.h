@@ -500,4 +500,7 @@ inline bool IsBlockPruned(const CBlockIndex* pblockindex)
     return (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0);
 }
 
+/** Create the DAG script **/
+CScript DAGGenesisScriptPubKey();
+
 #endif // BITCOIN_VALIDATION_H
