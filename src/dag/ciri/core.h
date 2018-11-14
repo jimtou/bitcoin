@@ -10,7 +10,7 @@
 
 #include "ciri/api/api.h"
 #include "ciri/conf.h"
-#include "consensus/consensus.h"
+#include "dag/consensus/consensus.h"
 #include "gossip/components/transaction_requester.h"
 #include "gossip/node.h"
 

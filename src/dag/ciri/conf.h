@@ -12,9 +12,15 @@
 
 #include "ciri/api/conf.h"
 #include "common/errors.h"
-#include "consensus/conf.h"
+#include "dag/consensus/conf.h"
 #include "gossip/conf.h"
 #include "utils/logger_helper.h"
+
+#ifndef  CIRI_MAINNET_VARIABLES
+  #define DB_PATH "ciri/db/ciri-mainnet.db"
+#else
+  #define DB_PATH "ciri/db/ciri-testnet.db"
+#endif
 
 #define DEFAULT_LOG_LEVEL LOGGER_INFO
 #define DEFAULT_DB_PATH DB_PATH

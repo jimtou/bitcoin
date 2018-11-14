@@ -87,6 +87,7 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_CLI) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_ZMQ) \
+  $(LIBDAG_CIRI) \
   $(LIBDAG_COMMON) \
   $(LIBDAG_CONSENSUS) \
   $(LIBDAG_GOSSIP) \
@@ -602,23 +603,14 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# dag network: dag network sockets
-libdag_network_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
-libdag_network_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libdag_network_a_SOURCES = \
-  dag/network/sockets.c \
-  $(BITCOIN_CORE_H) \
-  $(DAG_CORE_H)
-
 # dag ciri: dag ciri
-libdag_ciri_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
+libdag_ciri_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES)
 libdag_ciri_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libdag_ciri_a_SOURCES = \
   dag/ciri/api/api.c \
   dag/ciri/api/conf.c \
   dag/ciri/conf.c \
   dag/ciri/core.c \
-  dag/ciri/main.c \
   dag/ciri/usage.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
@@ -707,6 +699,14 @@ libdag_gossip_a_SOURCES = \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
+# dag network: dag network sockets
+libdag_network_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
+libdag_network_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_network_a_SOURCES = \
+  dag/network/sockets.c \
+  $(BITCOIN_CORE_H) \
+  $(DAG_CORE_H)
+  
 # dag utils: dag utils
 libdag_utils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES)
 libdag_utils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -757,6 +757,7 @@ bitcoind_LDADD = \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
+  $(LIBDAG_CIRI) \
   $(LIBDAG_COMMON) \
   $(LIBDAG_CONSENSUS) \
   $(LIBDAG_GOSSIP) \
