@@ -13,6 +13,9 @@
 #include "common/errors.h"
 #include "common/trinary/trit_byte.h"
 
+#define REQUEST_HASH_SIZE 46
+#define MWM 14
+
 #define PACKET_TX_SIZE 1604
 #define PACKET_SIZE (PACKET_TX_SIZE + REQUEST_HASH_SIZE)
 
@@ -26,7 +29,6 @@
 #define DEFAULT_PROBABILITY_SELECT_MILESTONE 0.7
 #define DEFAULT_PROBABILITY_SEND_MILESTONE 0.02
 #define DEFAULT_TIPS_CACHE_SIZE 5000
-
 #ifdef __cplusplus
 extern "C" {
 #endif

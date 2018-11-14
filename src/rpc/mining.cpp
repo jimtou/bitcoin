@@ -129,15 +129,15 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
 
-	if (nHeight <= (uint32_t)params.GetConsensus().BIP88Height) { 
+        if (nHeight <= (uint32_t)params.GetConsensus().BIP88Height) { 
        	    while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetHash(), pblock->nBits, Params().GetConsensus())) {
                 ++pblock->nNonce;
                 --nMaxTries;
             }
-	} else {
-	   // Will switch to DAG..
-	   nMaxTries = 0;
-	}
+	    } else {
+	       // Will switch to DAG..
+	       nMaxTries = 0;
+	    }
 
         if (nMaxTries == 0) {
             break;

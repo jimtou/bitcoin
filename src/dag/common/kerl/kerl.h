@@ -12,8 +12,8 @@ extern "C" {
 #ifndef __COMMON_KERL_KERL_H_
 #define __COMMON_KERL_KERL_H_
 
-#include <keccak/KeccakHash.h>
-
+//#include "keccak/KeccakHash.h"
+#include "KeccakHash.h"
 #include "common/curl-p/const.h"
 #include "common/stdint.h"
 #include "common/trinary/trits.h"

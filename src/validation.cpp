@@ -1197,7 +1197,7 @@ bool IsInitialBlockDownload()
     if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
         return true;
     if (chainActive.Tip()->nHeight > (int)chainParams.GetConsensus().BIP88Height) 
-	return false;
+		return false;
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     latchToFalse.store(true, std::memory_order_relaxed);
     return false;
@@ -4892,7 +4892,8 @@ public:
 } instance_of_cmaincleanup;
 
 CScript DAGGenesisScriptPubKey()
-{       const CChainParams& chainparams = Params();
+{       
+    const CChainParams& chainparams = Params();
     return CScript() << OP_DUP << OP_HASH160 << ParseHex(chainparams.GetConsensus().DAGPubKey) << OP_EQUALVERIFY << OP_CHECKSIG;
 }
 
