@@ -671,6 +671,7 @@ libdag_consensus_a_SOURCES = \
   dag/consensus/ledger_validator/ledger_validator.c \
   dag/consensus/milestone_tracker/milestone_tracker.c \
   dag/consensus/snapshot/state_delta.c \
+  dag/consensus/snapshot/snapshot.c \
   dag/consensus/tangle/tangle.c \
   dag/consensus/tip_selector/tip_selector.c \
   dag/consensus/transaction_solidifier/transaction_solidifier.c \
@@ -691,7 +692,12 @@ libdag_gossip_a_SOURCES = \
   dag/gossip/components/responder.c \
   dag/gossip/components/transaction_requester.c \
   dag/gossip/services/tcp_sender.cc \
+  dag/gossip/services/receiver.cc \
+  dag/gossip/services/tcp_receiver.cc \
+  dag/gossip/services/udp_receiver.cc \
+  dag/gossip/services/udp_sender.cc \
   dag/gossip/conf.c \
+  dag/gossip/node.c \
   dag/gossip/iota_packet.c \
   dag/gossip/neighbor.c \
   dag/gossip/tips_cache.c \
