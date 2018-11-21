@@ -25,6 +25,10 @@
 
 const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
 
+extern "C"{ 
+   int dag_start();
+}
+
 /* Introduction text for doxygen: */
 
 /*! \mainpage Developer documentation
@@ -165,6 +169,9 @@ static bool AppInit(int argc, char* argv[])
             return false;
         }
         fRet = AppInitMain();
+
+        // init dag
+        dag_start();
     }
     catch (const std::exception& e) {
         PrintExceptionContinue(&e, "AppInit()");

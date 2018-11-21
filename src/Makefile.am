@@ -294,6 +294,8 @@ DAG_CORE_H = \
   dag/common/trinary/tryte_ascii.h \
   dag/common/trinary/tryte.h \
   dag/common/trinary/tryte_long.h \
+  dag/common/trinary/flex_trit.h \
+  dag/common/trinary/flex_trit_array.h \
   dag/consensus/bundle_validator/bundle_validator.h \
   dag/consensus/cw_rating_calculator/cw_rating_calculator.h \
   dag/consensus/cw_rating_calculator/cw_rating_dfs_impl.h \
@@ -369,8 +371,8 @@ obj/build.h: FORCE
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
 # server: shared between bitcoind and bitcoin-qt
-libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
-libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS) $(PIC_FLAGS)
+libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libbitcoin_server_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
@@ -604,20 +606,21 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # dag ciri: dag ciri
-libdag_ciri_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES)
-libdag_ciri_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_ciri_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES) $(PIC_FLAGS)
+libdag_ciri_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_ciri_a_SOURCES = \
   dag/ciri/api/api.c \
   dag/ciri/api/conf.c \
   dag/ciri/conf.c \
   dag/ciri/core.c \
   dag/ciri/usage.c \
+  dag/ciri/exec.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
 # dag common library
-libdag_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)  $(DAG_INCLUDES)
-libdag_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)  $(DAG_INCLUDES) $(PIC_FLAGS)
+libdag_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_common_a_SOURCES = \
   dag/common/errors.c \
   dag/common/curl-p/curl_p_bct.c \
@@ -654,12 +657,14 @@ libdag_common_a_SOURCES = \
   dag/common/trinary/trit_tryte.c \
   dag/common/trinary/tryte_ascii.c \
   dag/common/trinary/tryte_long.c \
+  dag/common/trinary/flex_trit.c \
+  dag/common/trinary/flex_trit_array.cc \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
 # dag consensus library
-libdag_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)  $(DAG_INCLUDES)
-libdag_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)  $(DAG_INCLUDES) $(PIC_FLAGS)
+libdag_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_consensus_a_SOURCES = \
   dag/consensus/bundle_validator/bundle_validator.c \
   dag/consensus/cw_rating_calculator/cw_rating_calculator.c \
@@ -683,8 +688,8 @@ libdag_consensus_a_SOURCES = \
   $(DAG_CORE_H)
   
 # dag gossip: dag gossip
-libdag_gossip_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES)
-libdag_gossip_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_gossip_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES) $(PIC_FLAGS)
+libdag_gossip_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_gossip_a_SOURCES = \
   dag/gossip/components/broadcaster.c \
   dag/gossip/components/processor.c \
@@ -706,16 +711,16 @@ libdag_gossip_a_SOURCES = \
   $(DAG_CORE_H)
 
 # dag network: dag network sockets
-libdag_network_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) 
-libdag_network_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_network_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(PIC_FLAGS)
+libdag_network_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_network_a_SOURCES = \
   dag/network/sockets.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
   
 # dag utils: dag utils
-libdag_utils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES)
-libdag_utils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libdag_utils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(DAG_INCLUDES) $(PIC_FLAGS)
+libdag_utils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libdag_utils_a_SOURCES = \
   dag/utils/containers/hash/hash243_queue.c \
   dag/utils/containers/hash/hash243_set.c \
