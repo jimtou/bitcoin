@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cJSON.h"
+#include "cjson/cJSON.h"
 
 #include "cclient/serialization/json/json_serializer.h"
 

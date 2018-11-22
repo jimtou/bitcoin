@@ -27,11 +27,9 @@ BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
 DAG_INCLUDES=-I$(builddir) $(BDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 DAG_INCLUDES += -I$(srcdir)/dag
 DAG_INCLUDES += -I$(srcdir)/dag/cclient
-DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/lib/low/KeccakP-1600/Optimized64
-DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/lib/low/KeccakP-1600/Optimized64/LCu6
-DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/lib/high/Keccak
-DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/lib/common
-DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/lib/high/Keccak/FIPS202
+##keccak test
+#DAG_INCLUDES += -I$(srcdir)/dag/external/keccak
+DAG_INCLUDES += -I$(srcdir)/dag/external/keccak/bin/generic64/libkeccak.a.headers
 DAG_INCLUDES += -I$(srcdir)/dag/external/uthash/src
 
 LIBBITCOIN_SERVER=libbitcoin_server.a
@@ -332,13 +330,10 @@ DAG_CORE_H = \
   dag/gossip/tips_cache.h \
   dag/gossip/transaction_request.h \
   dag/network/sockets.h \
-  dag/utils/containers/lists/concurrent_list.h.inc \
-  dag/utils/containers/lists/concurrent_list.c.inc \
   dag/utils/containers/hash/hash243_set.h \
   dag/utils/containers/lists/concurrent_list_neighbor.h \
   dag/utils/containers/lists/concurrent_list_trit_array.h \
   dag/utils/containers/queues/concurrent_queue_trit_array.h \
-  dag/utils/containers/queues/concurrent_queue.h.inc \
   dag/utils/containers/bitset.h \
   dag/utils/handles/cond.h \
   dag/utils/handles/lock.h \
@@ -615,6 +610,12 @@ libdag_ciri_a_SOURCES = \
   dag/ciri/core.c \
   dag/ciri/usage.c \
   dag/ciri/exec.c \
+  dag/cclient/response/get_tips.c \
+  dag/cclient/types/types.c \
+  dag/cclient/response/get_trytes.c \
+  dag/cclient/serialization/json/json_serializer.c \
+  dag/cclient/response/get_neighbors.c \
+  dag/common/storage/sql/sqlite3/storage.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
@@ -659,6 +660,7 @@ libdag_common_a_SOURCES = \
   dag/common/trinary/tryte_long.c \
   dag/common/trinary/flex_trit.c \
   dag/common/trinary/flex_trit_array.cc \
+  dag/common/sign/v2/iss_curl.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
@@ -684,6 +686,15 @@ libdag_consensus_a_SOURCES = \
   dag/consensus/utils/tangle_traversals.c \
   dag/consensus/conf.c \
   dag/consensus/consensus.c \
+  dag/common/storage/sql/sqlite3/storage.c \
+  dag/common/model/bundle.c \
+  dag/common/model/transfer.c \
+  dag/common/helpers/sign.c \
+  dag/common/storage/sql/statements.c \
+  dag/common/storage/sql/sqlite3/connection.c \
+  dag/common/kerl/kerl.c \
+  dag/common/sign/v1/iss_kerl.c \
+  dag/common/sign/v2/iss_curl.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
   
@@ -707,6 +718,7 @@ libdag_gossip_a_SOURCES = \
   dag/gossip/neighbor.c \
   dag/gossip/tips_cache.c \
   dag/gossip/transaction_request.c \
+  dag/common/network/uri_parser.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
@@ -732,7 +744,6 @@ libdag_utils_a_SOURCES = \
   dag/utils/containers/lists/concurrent_list_neighbor.c \
   dag/utils/containers/lists/concurrent_list_trit_array.c \
   dag/utils/containers/queues/concurrent_queue_trit_array.c \
-  dag/utils/containers/queues/concurrent_queue.c.inc \
   dag/utils/containers/bitset.c \
   dag/utils/files.c \
   dag/utils/hash_maps.c \
@@ -742,6 +753,12 @@ libdag_utils_a_SOURCES = \
   dag/utils/system.c \
   dag/utils/time.c \
   dag/utils/logger.c \
+  dag/common/kerl/converter.c \
+  dag/common/kerl/bigint.c \
+  dag/common/sign/normalize.c \
+  dag/common/trinary/tryte_ascii.c \
+  dag/common/trinary/add.c \
+  dag/common/sign/v2/iss_curl.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
 
@@ -775,7 +792,11 @@ bitcoind_LDADD = \
   $(LIBDAG_NETWORK) \
   $(LIBDAG_UTILS) 
 
-bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) 
+bitcoind_LDADD += $(SQLITE3_LIBS) $(CJSON_LIBS) 
+
+##keccak test
+#bitcoind_LDADD +=  -L/$(srcdir)/dag/external/keccak/bin/generic64lc/ -lkeccak
 
 # bitcoin-cli binary #
 bitcoin_cli_SOURCES = bitcoin-cli.cpp

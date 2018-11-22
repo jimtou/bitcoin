@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#include "cJSON.h"
+#include "cjson/cJSON.h"
 
 #include "common/model/transaction.h"
 #include "consensus/conf.h"
