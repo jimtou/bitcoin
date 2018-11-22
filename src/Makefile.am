@@ -796,7 +796,7 @@ bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(E
 bitcoind_LDADD += $(SQLITE3_LIBS) $(CJSON_LIBS) 
 
 ##keccak test
-#bitcoind_LDADD +=  -L/$(srcdir)/dag/external/keccak/bin/generic64lc/ -lkeccak
+bitcoind_LDADD += -lkeccak
 
 # bitcoin-cli binary #
 bitcoin_cli_SOURCES = bitcoin-cli.cpp
