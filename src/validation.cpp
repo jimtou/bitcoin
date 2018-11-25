@@ -1081,19 +1081,6 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
         return error("%s: Deserialize or I/O error - %s at %s", __func__, e.what(), pos.ToString());
     }
 
-    uint256 hash = block.GetHash();
-    BlockMap::iterator miSelf = mapBlockIndex.find(hash);
-    CBlockIndex *pindex = nullptr;
-    if (hash != consensusParams.hashGenesisBlock) {
-        if (miSelf != mapBlockIndex.end()) {
-            // Block header is already known.
-            pindex = miSelf->second;
-            if (pindex->nHeight > (uint32_t)consensusParams.BIP88Height) {
-                return error("ReadBlockFromDisk: Errors in too high block %s", pos.ToString());
-            } 
-        }
-    }
-
     // Check the header
     if (!CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
@@ -1108,6 +1095,10 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
         LOCK(cs_main);
         blockPos = pindex->GetBlockPos();
     }
+
+    if (pindex->nHeight > (uint32_t)consensusParams.BIP87Height) {
+        return error("ReadBlockFromDisk: Errors in too high block %s", pindex->ToString());
+    } 
 
     if (!ReadBlockFromDisk(block, blockPos, consensusParams))
         return false;
@@ -1179,6 +1170,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 bool IsInitialBlockDownload()
 {
     const CChainParams& chainParams = Params();
+
     // Once this function has returned false, it must remain false.
     static std::atomic<bool> latchToFalse{false};
     // Optimization: pre-test latch before taking the lock.
@@ -1196,8 +1188,8 @@ bool IsInitialBlockDownload()
         return true;
     if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
         return true;
-    if (chainActive.Tip()->nHeight > (int)chainParams.GetConsensus().BIP88Height) 
-		return false;
+    if (chainActive.Tip()->nHeight <= (int)chainParams.GetConsensus().BIP87Height)
+	return true;
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     latchToFalse.store(true, std::memory_order_relaxed);
     return false;
@@ -2058,10 +2050,6 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
-
-    if (pindex->nHeight > (int32_t)chainparams.GetConsensus().BIP88Height)
-        return state.DoS(100, error("ConnectBlock(): block height pass the DAG start %d", pindex->nHeight), REJECT_INVALID, "bad-height");
-
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
@@ -3090,20 +3078,6 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 
 static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
-
-    // Check the Height in range
-    uint256 hash = block.GetHash();
-    BlockMap::iterator miSelf = mapBlockIndex.find(hash);
-    CBlockIndex *pindex = nullptr;
-    if (hash != consensusParams.hashGenesisBlock) {
-        if (miSelf != mapBlockIndex.end()) {
-            // Block header is already known.
-            pindex = miSelf->second;
-            if (pindex->nHeight > (uint32_t)consensusParams.BIP88Height)
-        return state.DoS(50, false, REJECT_INVALID, "high height", false, "Heigth check failed");
-        }
-    }
-
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
@@ -3271,9 +3245,6 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
             return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight), REJECT_CHECKPOINT, "bad-fork-prior-to-checkpoint");
     }
 
-//    if (nHeight >= consensusParams.BIP88Height)
-//        return state.Invalid(false, REJECT_INVALID, "bad-height", "incorrect block height");
-
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
@@ -3328,16 +3299,6 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
             !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-height", false, "block height mismatch in coinbase");
         }
-    }
-
-    if (nHeight >= consensusParams.BIP87Height &&
-        nHeight < consensusParams.BIP88Height)
-    {
-        const CTxOut& output = block.vtx[0]->vout[0];
-        if (output.scriptPubKey != DAGGenesisScriptPubKey())
-            return state.DoS(
-                100, error("%s: not DAG Key", __func__),
-                REJECT_INVALID, "bad-dag-coinbase-scriptpubkey");
     }
 
     // Validation for witness commitments.
@@ -3525,6 +3486,11 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
     // TODO: deal better with return value and error conditions for duplicate
     // and unrequested blocks.
     if (fAlreadyHave) return true;
+
+    if (chainActive.Height() > (uint32_t)chainparams.GetConsensus().BIP87Height || pindex->nHeight > 
+          chainparams.GetConsensus().BIP87Height)
+        return true; //skip
+
     if (!fRequested) {  // If we didn't ask for it:
         if (pindex->nTx != 0) return true;    // This is a previously-processed block that was pruned
         if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
@@ -4890,10 +4856,3 @@ public:
         mapBlockIndex.clear();
     }
 } instance_of_cmaincleanup;
-
-CScript DAGGenesisScriptPubKey()
-{       
-    const CChainParams& chainparams = Params();
-    return CScript() << OP_DUP << OP_HASH160 << ParseHex(chainparams.GetConsensus().DAGPubKey) << OP_EQUALVERIFY << OP_CHECKSIG;
-}
-
