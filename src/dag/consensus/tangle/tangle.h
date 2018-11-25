@@ -54,6 +54,32 @@ retcode_t iota_tangle_transaction_load_hashes_of_approvers(
     tangle_t const *const tangle, flex_trit_t const *const approvee_hash,
     iota_stor_pack_t *const pack);
 
+/**
+ * Loads hashes of missing transactions (i.e. only referred as trunk or branch)
+ *
+ * @param tangle The tangle
+ * @param pack A pack to be filled with hashes
+ * @param limit The maximum number of hashes to load
+ *
+ * @return a status code
+ */
+retcode_t iota_tangle_transaction_load_hashes_of_requests(
+    tangle_t const *const tangle, iota_stor_pack_t *const pack,
+    size_t const limit);
+
+/**
+ * Loads hashes of tips (i.e. not referenced by any transaction)
+ *
+ * @param tangle The tangle
+ * @param pack A pack to be filled with hashes
+ * @param limit The maximum number of hashes to load
+ *
+ * @return a status code
+ */
+retcode_t iota_tangle_transaction_load_hashes_of_tips(
+    tangle_t const *const tangle, iota_stor_pack_t *const pack,
+    size_t const limit);
+
 retcode_t iota_tangle_transaction_update_snapshot_index(
     tangle_t const *const tangle, flex_trit_t const *const hash,
     uint64_t const snapshot_index);
@@ -74,6 +100,10 @@ retcode_t iota_tangle_transaction_update_solid_state(
 retcode_t iota_tangle_transactions_update_solid_state(
     tangle_t const *const tangle, hash243_set_t const hashes,
     bool const is_solid);
+
+retcode_t iota_tangle_transaction_approvers_count(tangle_t const *const tangle,
+                                                  flex_trit_t const *const hash,
+                                                  size_t *const count);
 
 /*
  * Milestone operations

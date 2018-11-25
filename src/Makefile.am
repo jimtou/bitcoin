@@ -718,6 +718,7 @@ libdag_gossip_a_SOURCES = \
   dag/gossip/neighbor.c \
   dag/gossip/tips_cache.c \
   dag/gossip/transaction_request.c \
+  dag/gossip/components/tips_requester.c \
   dag/common/network/uri_parser.c \
   $(BITCOIN_CORE_H) \
   $(DAG_CORE_H)
@@ -738,6 +739,7 @@ libdag_utils_a_SOURCES = \
   dag/utils/containers/hash/hash243_set.c \
   dag/utils/containers/hash/hash243_stack.c \
   dag/utils/containers/hash/hash8019_queue.c \
+  dag/utils/containers/hash/hash8019_stack.c \
   dag/utils/containers/hash/hash81_queue.c \
   dag/utils/containers/hash/hash243_set.c \
   dag/utils/containers/hash/hash_stack.c.tpl \
