@@ -1,1 +1,0 @@
-/home/yang/.cache/bazel/_bazel_yang/dc7da1981c3696f3afe8a8f74dedfc0c/external/snapshot_sig_mainnet/file/snapshot.sig

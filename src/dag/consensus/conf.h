@@ -12,15 +12,15 @@
 #include "common/trinary/flex_trit.h"
 
 #ifndef CONSENSUS_MAINNET_VARIABLES
-    #define SNAPSHOT_CONF_FILE "external/snapshot_conf_mainnet/file/snapshot.json"
-    #define SNAPSHOT_SIG_FILE "external/snapshot_sig_mainnet/file/snapshot.sig"
-    #define SNAPSHOT_FILE "external/snapshot_mainnet/file/snapshot.txt"
+    #define SNAPSHOT_CONF_FILE "dag/dag_params/snapshot_conf_mainnet/file/snapshot.json"
+    #define SNAPSHOT_SIG_FILE "dag/dag_params/snapshot_sig_mainnet/file/snapshot.sig"
+    #define SNAPSHOT_FILE "dag/dag_params/snapshot_mainnet/file/snapshot.txt"
     #define NUM_KEYS_IN_MILESTONE 20
     #define MWM 14
 #else
-    #define SNAPSHOT_CONF_FILE "external/snapshot_conf_testnet/file/snapshot.json"
+    #define SNAPSHOT_CONF_FILE "dag/dag_params/snapshot_conf_testnet/file/snapshot.json"
     #define SNAPSHOT_SIG_FILE ""
-    #define SNAPSHOT_FILE "external/snapshot_testnet/file/snapshot.txt"
+    #define SNAPSHOT_FILE "dag/dag_params/snapshot_testnet/file/snapshot.txt"
     #define NUM_KEYS_IN_MILESTONE 22
     #define MWM 9
 #endif

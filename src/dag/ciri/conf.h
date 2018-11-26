@@ -17,9 +17,9 @@
 #include "utils/logger_helper.h"
 
 #ifndef  CIRI_MAINNET_VARIABLES
-  #define DB_PATH "ciri/db/ciri-mainnet.db"
+  #define DB_PATH "dag/ciri/db/ciri-mainnet.db"
 #else
-  #define DB_PATH "ciri/db/ciri-testnet.db"
+  #define DB_PATH "dag/ciri/db/ciri-testnet.db"
 #endif
 
 #define DEFAULT_LOG_LEVEL LOGGER_INFO
